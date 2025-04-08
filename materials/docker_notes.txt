@@ -1,0 +1,499 @@
+a. what is doker?
+Its a platform for building, running and shipping applications in a consistent manner, so that the way it runs on development machine, the same way it runs on other machine
+     
+the reasons why the application does not run properly on another machine:
+1. may be one or few files are missing from the application, i.e. not fully deployed
+2. the target machine has a different version of a s/w, on which the application is dependent on, from the expected version
+3. different configuration (environment variable) settings
+
+docker helps you create an image of the application along with all its dependencies and settings and then uses an isolated environment, called container to run the application from its image, while downloading its dependencies inside the container.
+even, if multiple applications depend on different version of same s/w, docker can download different versions of the same s/w for those applications running in different container, on the same machine.
+it eleminates the requirement of the multiple versions of the same s/w on the other machine.
+even when the application is no longer required, then at one go, the application and all of its dependencies can be removed.
+	
+in a nutshell, docker helps you to consistently build, run and ship your application across all the machines
+
+b. VM vs Docker
+
+Virtual Machine (VM):
+A virtual machine (VM) is a software-based computer that acts like a physical computer and runs on another computer's operating system. VMs are created from a pool of hardware resources and are isolated from the rest of the system. This means that the software running in a VM can't interfere with the host computer's operating system.
+
+A virtual machine, commonly shortened to just VM, is no different than any other physical computer like a laptop, smart phone, or server. It has a CPU, memory, disks to store your files, and can connect to the internet if needed. While the parts that make up your computer (called hardware) are physical and tangible, VMs are often thought of as virtual computers or software-defined computers within physical servers, existing only as code.
+
+A hypervisor isolates the necessary computing resources to create and manage VMs
+
+In cloud computing, VMs are used to virtualize the resources of cloud service providers' servers. This allows customers to share resources. 
+Amazon Web Services (AWS) offers a type of VM service called EC2 that allows users to rent virtualized computing resources by the hour.
+
+Hypervisor:
+A hypervisor is software that allows multiple virtual machines (VMs) to run on a single physical machine by sharing the machine's resources. It's also known as a virtual machine monitor (VMM)
+
+working of a hypervisor:
+1. Resource allocation
+The hypervisor allocates the physical machine's resources, like memory, CPU, and storage, to the VMs. 
+2. Isolation
+The hypervisor keeps the operating system and resources of the physical machine separate from the VMs. 
+3. Virtualization
+The hypervisor makes virtualization possible, which allows users to experience each VM as an independent computing environment.
+
+There are two types of hypervisors:
+
+1. Type 1 hypervisor:
+Also known as a bare metal hypervisor, this type of hypervisor sits on top of the physical server and has direct access to the hardware resources.
+
+2. Type 2 hypervisor:
+Also known as a hosted or embedded hypervisor, this type of hypervisor is an application installed on the host operating system.
+
+Different Hypervisors:
+1. Virtual Box
+2. VMware
+3. Hyper-V (windows only)
+
+Because of their flexibility and portability, virtual machines provide many benefits, such as:
+
+1. Cost savings—running multiple virtual environments from one piece of infrastructure means that you can drastically reduce your physical infrastructure footprint. This boosts your bottom line—decreasing the need to maintain nearly as many servers and saving on maintenance costs and electricity.
+
+2. Agility and speed—Spinning up a VM is relatively easy and quick and is much simpler than provisioning an entire new environment for your developers. Virtualization makes the process of running dev-test scenarios a lot quicker.
+
+3. Lowered downtime—VMs are so portable and easy to move from one hypervisor to another on a different machine—this means that they are a great solution for backup, in the event the host goes down unexpectedly.
+
+4. Scalability—VMs allow you to more easily scale your apps by adding more physical or virtual servers to distribute the workload across multiple VMs. As a result you can increase the availability and performance of your apps.
+
+5. Security benefits— Because virtual machines run in multiple operating systems, using a guest operating system on a VM allows you to run apps of questionable security and protects your host operating system. VMs also allow for better security forensics, and are often used to safely study computer viruses, isolating the viruses to avoid risking their host computer.
+
+Disadvantages:
+1. slow to start
+2. resource sensitive
+3. Each VM needs a full-blown OS with proper license, requires patch up with host OS
+4. limited number of VMs
+
+Comparison with Docker Containers:
+1. allow running multiple apps in isolation with having full blown OS for each of them
+2. lightweight
+3. uses single OS as the host, so we do need license for just host OS
+4. starts quickly
+5. We don't need allocate huge amount of resources from host OS as we don't need much resource for full blown OS, but just for the container. hence containers need less h/w resources compared to VMs
+
+
+3. Architecture of docker
+uses client-server architecture, where docker client s/w talks to a docker server (also known as docker engine) using RESTful API.
+every container is a special type of process
+all containers share the same host OS, or beter to say, the Kernel of the host OS.
+Kernel is the core of any OS, like an engine of a car. A kernel manages all applications as well as h/w resources of an OS.
+Every OS has Kernel with different APIs, that's why we can't winodws application on a linux OS.
+Hence linux OS can run only linux containers.
+Whereas, nowadays, windows 10 OS is shipped with two different Kernels: windows kernel which is the core here and also a linux kernel.
+hence on windows machine, you can run linux as well as Windows containers
+Mac OS kernel does not have any built-in support to run containers, hence it requires a linux VM to run linux containers
+
+
+4. installing docker
+
+5. development workflow:
+	docker image: it contains
+		1. a cut-down OS
+		2. runtime environment such as, .net or node etc.
+		3. application files
+		4. 3rd party libraries (dependencies) of an application
+		5. environment variables
+
+	dockerfile: contains instructions to package our application and its dependencies into an image
+
+
+How Containers work?
+-------------------------------------------------
+ - A container is an isolated, lightweight package for running an application on the host operating system. 
+ - Containers build on top of the host operating system's kernel (which can be thought of as the buried plumbing of the operating system)
+ - While a container shares the host operating system's kernel, the container doesn't get unfettered access to it. 
+ - Instead, the container gets an isolated–and in some cases virtualized–view of the system. 
+	For example, a container can access a virtualized version of the file system and registry, but any changes affect only the container and are discarded when it stops. 
+ - To save data, the container can mount persistent storage such as an Azure Disk or a file share (including Azure Files).
+
+ - A container builds on top of the kernel, but the kernel doesn't provide all of the APIs and services an app needs to run–most of these are provided by system files (libraries) that run above the kernel in user mode. 
+ - Because a container is isolated from the host's user mode environment, the container needs its own copy of these user mode system files, which are packaged into something known as a base image. 
+ - The base image serves as the foundational layer upon which your container is built, providing it with operating system services not provided by the kernel. 
+
+Containers vs VM:
+-------------------------
+In contrast to a container, a virtual machine (VMs) runs a complete operating system–including its own kernel
+
+Container images:
+-------------------------------
+ - All containers are created from container images. 
+ - A container image is a bundle of files organized into a stack of layers that resides on your local machine or in a remote container registry. 
+ - The container image consists of the user mode operating system files needed to support your app, any runtimes or dependencies of your app, and any other miscellaneous configuration file your app needs to run properly.
+
+Microsoft images:
+----------------------
+Microsoft offers several images (called base images) that you can use as a starting point to build your own container image:
+
+Windows => contains the full set of Windows APIs and system services (minus server roles).
+Windows Server => contains the full set of Windows APIs and system services.
+Windows Server Core => a smaller image that contains a subset of the Windows Server APIs–namely the full .NET framework. It also includes most but not all server roles (for example Fax Server is not included).
+Nano Server => the smallest Windows Server image and includes support for the .NET Core APIs and some server roles.
+
+ - Because of the layered nature of containers, you don't have to always target a base image to build a Windows container. 
+ - Instead, you could target another image that already carries the framework you want. 
+ - For example, the .NET team publishes a .NET core image that carries the .NET core runtime. It saves users from needing to duplicate the process of installing .NET core–instead they can reuse the layers of this container image. The .NET core image itself is built based upon Nano Server.
+
+
+Isolation Modes of Windows Containers:
+--------------------------------------------------
+Windows containers offer two distinct modes of runtime isolation: process and Hyper-V isolation. 
+Containers running under both isolation modes are created, managed, and function identically. 
+They also produce and consume the same container images. 
+The difference between the isolation modes is to what degree of isolation is created between the container, the host operating system, and all of the other containers running on that host.
+
+Process Isolation:
+--------------------------------
+This is the "traditional" isolation mode for containers and is what is described in the Windows containers overview. With process isolation, multiple container instances run concurrently on a given host with isolation provided through namespace, resource control, and other process isolation technologies. When running in this mode, containers share the same kernel with the host as well as each other. This is approximately the same as how Linux containers run.
+
+What gets isolated:
+----------------------------------------------------------
+Windows containers virtualize access to various operating system namespaces. 
+A namespace provides access to information, objects, or resources via a name. 
+For example, the file system is probably the best-known namespace. 
+
+There are numerous namespaces on Windows that get isolated on a per-container basis:
+ - file system
+ - registry
+ - network ports
+ - process and thread ID space
+ - Object Manager namespace
+
+
+Hyper-V isolation:
+-------------------------------------
+This isolation mode offers enhanced security and broader compatibility between host and container versions. 
+With Hyper-V isolation, multiple container instances run concurrently on a host; however, each container runs inside of a highly optimized virtual machine and effectively gets its own kernel. 
+The presence of the virtual machine provides hardware-level isolation between each container as well as the container host.
+
+
+Create container:
+---------------------------------------
+
+1. containers with hyper-v isolation:
+
+Managing Hyper-V-isolated containers with Docker is nearly identical to managing process-isolated containers. To create a container with Hyper-V isolation using Docker, use the --isolation parameter to set --isolation=hyperv.
+command => docker run -it --isolation=hyperv mcr.microsoft.com/windows/servercore:ltsc2019 cmd
+
+2. containers with process isolation:
+
+To create a container with process isolation through Docker, use the --isolation parameter to set --isolation=process.
+command => docker run -it --isolation=process mcr.microsoft.com/windows/servercore:ltsc2019 cmd
+
+Note:
+---------------
+Windows containers running on Windows Server default to running with process isolation. 
+Windows containers running on Windows 10 Pro and Enterprise default to running with Hyper-V isolation. 
+Starting with the Windows 10 October 2018 update, users running a Windows 10 Pro or Enterprise host can run a Windows container with process isolation. 
+Users must directly request process isolation by using the --isolation=process flag.
+
+
+Docker Build:
+--------------------------------------------------
+>docker build -t sample-app .          	=> tag: latest
+>docker build -t sample-app:1.0.0 .		=> tag: 1.0.0
+
+
+Docker run:
+-------------------------------------
+>docker run sample-app:1.0.0/latest		=> will create new container every time you run this command and those containers will be attached container, means, it will block the terminal 
+
+>docker run -d sample-app:1.0.0/latest 	=> will create new container every time you run this command and those containers will be detatched container, means, it will NOT block the terminal 
+
+>docker run --rm sample-app:1.0.0/latest => same like above, but it is configured to be removed as soon as the container is stopped
+
+>docker start <container-name/id>			=> will start an existing (stopped) container in detatched mode
+
+>docker start -a <container-name/id>		=> will start an existing (stopped) container in attached mode [Attach STDOUT/STDERR and forward signals]
+
+>docker attach <container-name/id>		=> will attach to the container running in the background (running in the detatched mode)
+
+>docker logs <container-name/id>			=> will attch to the container and fetch the logs of a container
+
+>docker logs -f <container-name/id>		=> will attch to the container and fetch the logs of a container and follows the log output continuously, means, this is another way to get attached to the detatched container again
+
+>docker stop <container-name/id>			=> will stop the container
+
+>docker rm <container1-name/id> <container2-name/id> ...
+											=> removes the container(s)
+
+>docker start -a -i <container-name/id>	=> will start an existing (stopped) container in attached and interactive mode (for both input and output, since using just -a flag wil help to attach STDOUT/STDERR and forward signals)
+
+>docker run -i sample-app:1.0.0/latest	=> will create new container every time you run this command in attached and interactive mode 
+
+>docker image ls							=> displays images (by default hides intermediate images)
+[aliases: docker image list/docker images]
+
+Note: "docker image" command is to manage images, but "docker images" is just to display or display filtered images etc.
+
+>docker image rm image1 image2...			=> removes image(s)
+[aliases: docker image remove, docker rmi]
+
+
+
+Volumes:
+-----------------------------------
+Volumes are the preferred mechanism for persisting data generated by and used by Docker containers. 
+volumes are completely managed by Docker. 
+Volumes have several advantages:
+a. Volumes are easier to back up or migrate than bind mounts.
+b. You can manage volumes using Docker CLI commands or the Docker API.
+c. Volumes work on both Linux and Windows containers.
+d. Volumes can be more safely shared among multiple containers.
+e. Volume drivers let you store volumes on remote hosts or cloud providers, encrypt the contents of volumes, or add other functionality.
+f. New volumes can have their content pre-populated by a container.
+g. Volumes on Docker Desktop have much higher performance. (compared to bind mounts from Mac and Windows hosts)
+g. In addition, volumes are often a better choice than persisting data in a container's writable layer, because a volume doesn't increase the size of the containers using it, and the volume's contents exist outside the lifecycle of a given container.
+
+
+remove a volume:
+>docker volume rm <volume-name/id>
+
+removing anonymus volume:
+>docker volume rm <volume-name/id>0e2286920430b0a591f75cd4b331e9f373dd536939e5acb56494885bf3b85027
+
+removing named volume:
+>docker volume rm feedback
+
+1. Anonymous volumes:
+-------------------------------
+command: >docker run --name feedback-app -v /app/feedback feedback-app:volumes
+
+volume created=> (docker volume ls)
+DRIVER    VOLUME NAME
+local     0e2286920430b0a591f75cd4b331e9f373dd536939e5acb56494885bf3b85027
+
+Inspect an anonymous volume:(docker volume inspect 0e2286920430b0a591f75cd4b331e9f373dd536939e5acb56494885bf3b85027)
+[
+    {
+        "CreatedAt": "2024-11-07T10:32:07Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.volume.anonymous": ""
+        },
+        "Mountpoint": "/var/lib/docker/volumes/0e2286920430b0a591f75cd4b331e9f373dd536939e5acb56494885bf3b85027/_data",
+        "Name": "0e2286920430b0a591f75cd4b331e9f373dd536939e5acb56494885bf3b85027",       
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+Anonymous volumes are removed automatically, when a container is removed.
+This happens when you start / run a container with the --rm option.
+
+>docker run --rm --name feedback-app -v /app/feedback feedback-app:volumes
+
+If you start a container without that option, the anonymous volume would NOT be removed, even if you remove the container (with docker rm ...).
+
+Still, if you then re-create and re-run the container (i.e. you run docker run ... again), a new anonymous volume will be created. So even though the anonymous volume wasn't removed automatically, it'll also not be helpful because a different anonymous volume is attached the next time the container starts (i.e. you removed the old container and run a new one).
+Now you just start piling up a bunch of unused anonymous volumes - you can clear them via "docker volume rm VOL_NAME" or "docker volume prune".
+
+Sharing the same anonymous volume:
+------------------------------------------------
+you can use the same volume when creating a new container using the "--volumes-from" flag:
+>docker run -d -p 3000:8001 --name feedback-app-next --volumes-from feedback-app feedback-app:volumes
+
+example:
+
+a. 1st container (with --rm flag)
+>docker run -d -p 3000:8001 --rm --name feedback-app -v /app/feedback feedback-app:volumes
+
+docker volume created => docker volume ls
+DRIVER    VOLUME NAME
+local     1a3596342c745e49e7519b87090d2e2c204a9829e499572709bd61ba7bcb1b97
+
+b. 2nd container (while the 1st container is running since we have set --rm flag on 1st container)
+>docker run -d -p 3001:8001 --rm --name feedback-app-next --volumes-from feedback-app feedback-app:volumes
+
+both will share the same volume, no new volume created
+
+>docker volume ls
+DRIVER    VOLUME NAME
+local     1a3596342c745e49e7519b87090d2e2c204a9829e499572709bd61ba7bcb1b97
+
+2. Named volumes:
+-----------------------------------------------
+command: >docker run [-d] [-p] [--rm] --name feedback-app -v feedback:/app/feedback feedback-app:volumes
+alternate: >docker run -d -p 3000:8001 --rm --name feedback-app --mount source=feedback,target=/app/feedback feedback-app:volumes
+
+result => 
+DRIVER    VOLUME NAME
+local     feedback
+
+Inspect a named volume: (>docker volume inspect feedback)
+[
+    {
+        "CreatedAt": "2024-11-07T10:25:35Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/feedback/_data",
+        "Name": "feedback",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+Named volumes are NOT removed even if you start the container with "--rm" flag.
+
+Bind Mounts - Shortcuts:
+-------------------------------------------------------
+Note: If you don't always want to copy and use the full path, you can use these shortcuts:
+
+macOS / Linux: -v $(pwd):/app
+Windows: -v "%cd%":/app
+
+
+Environment Variables & Security:
+------------------------------------------------
+1. technique: set the ENV in Dockerfile
+---------------------------------------------------------------------------------------------------------------------------------
+
+you can set an environment variable in dockerfile, like the following and you use it
+ENV PORT=3001   
+EXPOSE ${PORT}
+
+then run the container:
+>docker run -d -p 3000:3001 --rm --name feedback-app -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+
+you can overwrite the ENV in dockerfile, by the value of PORT from command line
+run the container:
+>docker run -d -p 3000:3002 --rm --name feedback-app -e PORT=3002 -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+
+also you can create a .env file and place key-value pair PORT=3003 and then you can run the conainer
+>docker run -d -p 3000:3003 --rm --env-file .env --name feedback-app -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+
+Securty aspect with environment variables in Dockerfile:
+-----------------------------------------------------------------
+the PORT variable will be used during run time (when the container is created)
+since the ENV variable will not be used during build time, it is sometimes advisable to use it during container run, as the ENV valriable and their values are "baked" into the image. if they are some sensitive data, then its advisable NOT TO DO THAT.
+
+2. technique: supply the environment variable as command line argument when running the container (using --env or -e flag)
+---------------------------------------------------------------------------------------------------------------------------------
+
+>docker run -d -p 3000:8001 --env PORT=8001 --rm --name feedback-app -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+
+or
+
+>docker run -d -p 3000:8001 -e PORT=8001 --rm --name feedback-app -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+
+Note: in this case, comment the ENV section in Dockerfile and re-build the image:
+# ENV PORT=8001   
+# EXPOSE ${PORT}
+
+3. technique: supply the environment variable file, containing environment variables, as command line argument when running the container 
+(using --env-file flag)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+you can create a file with all your environment variables and let them be read when the container is created and run, like the following
+>docker run -d -p 3000:8001 --env-file ./.env --rm --name feedback-app -v feedback:/app/feedback -v "D:/my-applications/docker-apps/data-volumes-app:/app" -v /app/node_modules feedback-app:volumes
+(Assuming your environment file is .env and the variable stored in it is PORT=8001)
+
+Note: you need not to rebuild the image
+
+Securty aspect with environment file:
+-------------------------------------
+Depending on which kind of data you're storing in your environment variables, you might not want to include the secure data directly in your Dockerfile. (As mentioned earlier). For example, tThe PORT variable will be used during run time (when the container is created). Since the ENV variable will not be used during build time, it is sometimes advisable to use it during container run, as the ENV valriable and their values are "baked" into the image and everyone can read these values via docker history <image>. For some values, this might not matter but for credentials, private keys etc. you definitely want to avoid that!
+
+Instead, go for a separate environment variables file which is then only used at runtime (i.e. when you run your container with docker run).
+If you use a separate file, the values are not part of the image since you point at that file when you run docker run. 
+
+Note: But make sure you don't commit that separate file as part of your source control repository, if you're using source control.
+
+
+Networks:
+------------------------------------
+1. docker container to www => such as request to any website - nothing required
+2. docke container to services running on local machine, use in the code "host.docker.internal:<port>"
+
+example:running SQL server in a local machine and connecting to it from an app inside a container
+	a. a SQL Server express running in your system (joydip-pc\sqlexpress)
+	b. configure the network for it to listen to port 1433
+	c. use the following connection string in your dot net application running in a container: 
+	server=host.docker.internal\\sqlexpress,1433;database=siemensdb;user id=sa; password=sqlserver2024; TrustServerCertificate=True
+
+3. to create communication between the containers 
+a. create a network
+	>docker network create <name>
+b. run container by connecting them to thet network
+	>docker run [-d] [-p local-machine-port:internal-port>] --name <name> --network <name> <image-name>
+c. then from another app, running in another contianre, use name of the 1ts container in the connection string
+
+
+pull SQL server image and running in a container and interacting with it from local machine
+------------------------------------------------------------------------------------------------
+3. docker container to services running in another docker container
+	a. pull the image => 
+		>docker pull mcr.microsoft.com/mssql/server:2022-latest 
+		and then run it in a container
+
+	b. or run directly the container =>
+		>docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=SqlServer@2024"  -e "MSSQL_PID=Express" -p 1433:1433 --rm --name sql-server mcr.microsoft.com/mssql/server:2022-latest
+		If you want to connect to this server and execute some queries following the specific instructions
+		i. Use the docker exec -it command to start an interactive bash shell inside your running container.
+			>docker exec -it sql-server "bash" (sql-server is the name of the container as mentioned through --name flag while creating the container)
+		ii. Once inside the container, connect locally with sqlcmd, using its full path
+			>/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "SqlServer@2024" -No (sa is the user account and -No flag is to specify that encryption is optional, not mandatory.)
+
+		If successful, you should get to a sqlcmd command prompt: 1>.
+
+		iii. create a database
+		1>create database siemensdb;
+		2>GO (The previous command is not run immediately. Type GO on a new line to run the previous command)
+		
+		iv. view the databases created
+		3>SELECT Name from sys.databases;
+		4>GO
+
+		v. create a table in "siemensdb" database
+		5>use siemensdb;
+		6>create table products(product_id int primary key identity(100,1) not null, product_name varchar(50) not null, product_price decimal(18,2) default(0), product_description varchar(max));
+		7>GO
+
+		vi. insert a record in the database table
+		8>insert into products values('dell xps 13', 120000, 'new laptop from dell');
+		9>GO
+
+		vi. view records fromm the table:
+		10>select * from products
+		11>GO
+
+		vi. view the tables from siemensdb
+		12>SELECT * FROM siemensdb.INFORMATION_SCHEMA.TABLES
+		13>GO
+		
+
+	c. use the following connection string in your dot net application running in a container:
+
+	i. if the sql server (Express) in the other container has exposed port 1433
+	server=host.docker.internal\\sqlexpress,1433;database=siemensdb;user id=sa; password=sqlserver2024; TrustServerCertificate=True
+
+	ii. connect to sql server running in a separate container where both the container are part of docker managed network:
+	server=<container-name>,1433;database=siemensdb;user id=sa; password=sqlserver2024; TrustServerCertificate=True
+
+Docker Network Drivers:
+----------------------------------------------
+Docker Networks actually support different kinds of "Drivers" which influence the behavior of the Network.
+
+The default driver is the "bridge" driver - it provides the behavior shown in this module (i.e. Containers can find each other by name if they are in the same Network).
+
+The driver can be set when a Network is created, simply by adding the --driver option.
+
+docker network create --driver bridge my-net
+Of course, if you want to use the "bridge" driver, you can simply omit the entire option since "bridge" is the default anyways.
+
+Docker also supports these alternative drivers - though you will use the "bridge" driver in most cases:
+
+host: For standalone containers, isolation between container and host system is removed (i.e. they share localhost as a network)
+
+overlay: Multiple Docker daemons (i.e. Docker running on different machines) are able to connect with each other. Only works in "Swarm" mode which is a dated / almost deprecated way of connecting multiple containers
+
+macvlan: You can set a custom MAC address to a container - this address can then be used for communication with that container
+
+none: All networking is disabled.
+
+Third-party plugins: You can install third-party plugins which then may add all kinds of behaviors and functionalities
+
+As mentioned, the "bridge" driver makes most sense in the vast majority of scenarios.
+

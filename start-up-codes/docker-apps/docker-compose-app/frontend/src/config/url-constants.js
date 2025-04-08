@@ -1,0 +1,1 @@
+export const GOALS_API = 'http://localhost:3001/goals'

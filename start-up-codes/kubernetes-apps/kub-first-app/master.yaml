@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    tier: pod-ip-service
+    # you can use the label key "tier" to access the service from kubectl (such as to delete)
+spec:
+  selector:
+    app: kube-message-pod
+  ports:
+    - protocol: "TCP"
+      port: 3000
+      targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-message-app
+  labels:
+    group: message-app-example
+    # you can use the label key "group" to access the deployment from kubectl (such as to delete)
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-message-pod
+  template:
+    metadata:
+      labels:
+        app: kube-message-pod
+    spec:
+      containers:
+        - name: kube-message-container
+          image: joydipdocker/message-app:4
+          imagePullPolicy: Always
+          # use the above to pull the image always in case you don't mention the tag with the image
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"

@@ -1,0 +1,39 @@
+POST http://127.0.0.1:56825/login
+Content-Type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"testers"
+}
+
+###
+POST http://127.0.0.1:56825/signup
+Content-Type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"testers"
+}
+
+###
+POST http://localhost:8002/tasks
+Content-Type: application/json
+Authorization: Bearer abc
+
+{
+    "text":"A new task",
+    "title":"Do this, too"
+}
+
+###
+GET http://localhost:8002/tasks
+Authorization: Bearer abc
+
+###
+POST http://127.0.0.1:63641/login
+Content-Type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"testers"
+}

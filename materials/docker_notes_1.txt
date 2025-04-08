@@ -1,0 +1,494 @@
+Question: why hyper-v and wsl are required on windows OS for docker desktop to work properly?
+
+Answer:
+Docker Desktop for Windows works with WSL2 for Win11 home, pro and enterprise .
+Hyper-V requires a Win11 pro or enterprise version.
+The WSL2 backend is recommended over the HyperV-based WSL1 backend.
+
+Support for Docker on Windows is not native, Docker was written to be run on Linux initially. So the requirements for running Docker CE on Windows are:
+
+Virtualization must be enabled since docker-ce creates a VM on Hyper-V. Since all hypervisors require hardware virtualization to be enabled, Hyper-V in this matter is not exceptional. The Docker for Windows installer will enable Hyper-V for you, if needed, and restart your machine.
+
+For older Windows systems that don’t support hardware virtualization, it’s recommended to use Docker Toolbox which uses Oracle Virtualbox to spin up VMs that will host docker containers instead of Hyper-V.
+
+details => 
+
+Answer-1:
+the following paragraphs are from the following link:
+https://cognitivewaves.wordpress.com/docker-container-linux-windows/
+
+snippets:
+Docker evolved on Linux. Much of the confusion arises with Docker trying to support containerization on Windows.
+
+A container is considered “native”, if it can run directly on the host operating system.
+
+Linux Container: A Linux application that runs in an isolated Linux environment.
+This same container can be run on Windows using virtualization to emulate a Linux environment, but the container is still running on Linux. This virtualization can be
+
+VirtualBox (Docker Toolbox)
+Hyper-V backend (Docker Desktop)
+WSL2 backend (Docker Desktop)
+Windows (Server) Container: A Windows application that runs in an isolated Windows environment.
+
+Process Isolation - This is the “traditional” isolation mode for containers. It is approximately the same as how Linux containers run on Linux
+Hyper-V isolation - This isolation mode offers enhanced security and broader compatibility between host and container versions.
+As you can see, Hyper-V can be used to run even native Windows containers, which is generally a source of confusion.
+
+Further, docker-machine is a superseded product.
+
+Machine was the only way to run Docker on Mac or Windows previous to Docker v1.12. Starting with the beta program and Docker v1.12, Docker Desktop for Mac and Docker Desktop for Windows are available as native apps and the better choice for this use case on newer desktops and laptops.
+
+
+Answer-2:
+
+from MSDN: (https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers#prerequisites)
+
+WSL can run distributions in both WSL version 1 or WSL 2 mode. You can check this by opening PowerShell and entering: wsl -l -v. Ensure that the your distribution is set to use WSL 2 by entering: wsl --set-version <distro> 2. Replace <distro> with the distro name (e.g. Ubuntu 18.04).
+
+In WSL version 1, due to fundamental differences between Windows and Linux, the Docker Engine couldn't run directly inside WSL, so the Docker team developed an alternative solution using Hyper-V VMs and LinuxKit. However, since WSL 2 now runs on a Linux kernel with full system call capacity, Docker can fully run in WSL 2. This means that Linux containers can run natively without emulation, resulting in better performance and interoperability between your Windows and Linux tools.
+
+In a nutshell:
+WSL2 will replace Hyper-V.
+We used to need both Hyper-V and WSL. Then we could use WSL2 only. And Hyper-V is no more needed so they will abandon it to focus on WSL2.
+
+Question: how to clean up your system from docker images?
+Answer: https://forum.codewithmosh.com/t/docker-hyper-v-instead-of-wsl-2/23327/5
+
+
+Question: How does containers run on Windows OS?
+Answer: https://learn.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/hyperv-container
+
+Learn more about containers:
+https://learn.microsoft.com/en-us/virtualization/windowscontainers/about/
+
+clear docker cache: (https://depot.dev/blog/docker-clear-cache)
+---------------------------------------
+How much disk space is Docker using?
+Answer: 
+We can use the "docker system df" command to get a breakdown of how much disk space is being taken up by various artifacts.
+
+
+https://labs.play-with-docker.com/
+
+
+How come the docker is working without any linux distro on windows? (link => https://www.reddit.com/r/docker/comments/p4sml9/if_docker_for_windows_requires_a_linux_distro_why/?rdt=45895#:~:text=Docker%20on%20Windows%20runs%20in,natively%20on%20a%20Linux%20Machine.)
+------------------------------------------------------------------------------
+
+Docker can work without a Linux distro installed if you use Docker Desktop on Windows, macOS, or Linux. Docker Desktop is an application that lets you build and share containerized applications and microservices. 
+If you're using Docker Desktop on Windows, you can use the docker CLI and UI without any additional Linux distros. However, for the best developer experience, you can install at least one additional distro and enable Docker support.
+
+If you are thinking of a linux distro as an OS, which is not correct. A linux distro is a set of packages (files) that are distributed with the linux kernel. The linux kernel is itself an OS, the primary components of which are the process scheduler and the memory manager.
+
+Containers all use the host's kernel. Or another way to state the same thing, containers are just processes on the host, the difference for docker is that these processes have been isolated, using kernel level features, from one another.
+
+Because the point of containers is that they only share the kernel of the host. So to run a Linux container you need a Linux host. Beyond that the container needs to provide everything else.
+
+Docker on Windows runs in a virtual machine as docker needs a Linux kernel to run. And each container just brings a highly stripped userspace which are isolated from each other through cgroups. Advantage of this is that you don‘t need an VM overhead if you run docker natively on a Linux Machine. Windows needs a VM to support docker. The same with macOS.
+
+Hyper-V is a fine Type-1 Hypervisor. This is not Virtual Box. The VMs run on the same layer on Hardware as the Windows10. Dualboot is super old-school nowadays and a needless hassle.
+
+If one does not like WSL, you can also virtualize a normal Linux in Hyper-V. Plenty of businesses run their production Linux servers on Hyper-V, although Windows Server not Windows 10. It's good enough for home lab work.
+
+The only significant performance penalty with Docker on Windows, is with mounted folders, because they are on Windows NTFS Volume and everything needs to be translated. The speed is still fast enough for almost all uses. The only situation where it bit me was playing 4k videos which were mounted from a NTFS folder.
+
+Docker volumes run faster/normal speed, because volumes reside on the ext4 formatted VHD for the WSL VM.
+
+Issue: access denied for volumes in asp.net core application in docker conatiner
+Links:
+https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/app-user
+https://github.com/testcontainers/testcontainers-dotnet/issues/1171
+https://dev.to/rimelek/everything-about-docker-volumes-1ib0#avoid-accidental-data-loss-on-volumes
+
+
+
+
+Linux Folder Structure:
+----------------------------------------
+user@machinename:/(root directory)#(highest privilege)
+if logged in NOT as root, then instead of #, $ will be displayed
+root@7e62f9f74455:/# whoami => usename of logged person
+root
+
+root@7e62f9f74455:/# echo $0 => location of shell program, known as "bash" (Bourne-Again Shell)
+/bin/bash
+
+to get the history of all previously typed commands:
+root@7e62f9f74455:/# history
+    1  echo hello
+    2  whoami
+    3  echo $0
+    4  history
+
+re-run the previous command:
+root@7e62f9f74455:/# !2 (use !command-number)
+whoami
+root
+
+apt:
+----------------------------------
+ => apt is a commandline package manager and provides commands for searching and managing as well as querying information about packages.
+root@7e62f9f74455:/# apt
+
+Most used commands with apt:
+------------------------------------------
+  list - list packages based on package names
+  search - search in package descriptions
+  show - show package details
+  install - install packages
+  reinstall - reinstall packages
+  remove - remove packages
+  autoremove - automatically remove all unused packages
+  update - update list of available packages
+  upgrade - upgrade the system by installing/upgrading packages
+  full-upgrade - upgrade the system by removing/installing/upgrading packages
+  edit-sources - edit the source information file
+  satisfy - satisfy dependency strings
+
+List all the packages installed:
+----------------------------------------------
+root@7e62f9f74455:/# apt list
+Listing... Done
+apt/now 2.7.14build2 amd64 [installed,local]
+base-files/now 13ubuntu10.1 amd64 [installed,local]
+base-passwd/now 3.6.3build1 amd64 [installed,local]
+bash/now 5.2.21-2ubuntu4 amd64 [installed,local]
+bsdutils/now 1:2.39.3-9ubuntu6.1 amd64 [installed,local]
+coreutils/now 9.4-3ubuntu6 amd64 [installed,local]
+dash/now 0.5.12-6ubuntu5 amd64 [installed,local]
+debconf/now 1.5.86ubuntu1 all [installed,local]
+debianutils/now 5.17build1 amd64 [installed,local]
+diffutils/now 1:3.10-1build1 amd64 [installed,local]
+dpkg/now 1.22.6ubuntu6.1 amd64 [installed,local]
+e2fsprogs/now 1.47.0-2.4~exp1ubuntu4.1 amd64 [installed,local]
+findutils/now 4.9.0-5build1 amd64 [installed,local]
+gcc-14-base/now 14-20240412-0ubuntu1 amd64 [installed,local]
+gpgv/now 2.4.4-2ubuntu17 amd64 [installed,local]
+grep/now 3.11-4build1 amd64 [installed,local]
+gzip/now 1.12-1ubuntu3 amd64 [installed,local]
+hostname/now 3.23+nmu2ubuntu2 amd64 [installed,local]
+init-system-helpers/now 1.66ubuntu1 all [installed,local]
+libacl1/now 2.3.2-1build1 amd64 [installed,local]
+libapt-pkg6.0t64/now 2.7.14build2 amd64 [installed,local]
+libassuan0/now 2.5.6-1build1 amd64 [installed,local]
+libattr1/now 1:2.5.2-1build1 amd64 [installed,local]
+libaudit-common/now 1:3.1.2-2.1build1 all [installed,local]
+libaudit1/now 1:3.1.2-2.1build1 amd64 [installed,local]
+libblkid1/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+libbz2-1.0/now 1.0.8-5.1build0.1 amd64 [installed,local]
+libc-bin/now 2.39-0ubuntu8.3 amd64 [installed,local]
+libc6/now 2.39-0ubuntu8.3 amd64 [installed,local]
+libcap-ng0/now 0.8.4-2build2 amd64 [installed,local]
+libcap2/now 1:2.66-5ubuntu2 amd64 [installed,local]
+libcom-err2/now 1.47.0-2.4~exp1ubuntu4.1 amd64 [installed,local]
+libcrypt1/now 1:4.4.36-4build1 amd64 [installed,local]
+libdb5.3t64/now 5.3.28+dfsg2-7 amd64 [installed,local]
+libdebconfclient0/now 0.271ubuntu3 amd64 [installed,local]
+libext2fs2t64/now 1.47.0-2.4~exp1ubuntu4.1 amd64 [installed,local]
+libffi8/now 3.4.6-1build1 amd64 [installed,local]
+libgcc-s1/now 14-20240412-0ubuntu1 amd64 [installed,local]
+libgcrypt20/now 1.10.3-2build1 amd64 [installed,local]
+libgmp10/now 2:6.3.0+dfsg-2ubuntu6 amd64 [installed,local]
+libgnutls30t64/now 3.8.3-1.1ubuntu3.2 amd64 [installed,local]
+libgpg-error0/now 1.47-3build2 amd64 [installed,local]
+libhogweed6t64/now 3.9.1-2.2build1.1 amd64 [installed,local]
+libidn2-0/now 2.3.7-2build1 amd64 [installed,local]
+liblz4-1/now 1.9.4-1build1.1 amd64 [installed,local]
+liblzma5/now 5.6.1+really5.4.5-1build0.1 amd64 [installed,local]
+libmd0/now 1.1.0-2build1 amd64 [installed,local]
+libmount1/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+libncursesw6/now 6.4+20240113-1ubuntu2 amd64 [installed,local]
+libnettle8t64/now 3.9.1-2.2build1.1 amd64 [installed,local]
+libnpth0t64/now 1.6-3.1build1 amd64 [installed,local]
+libp11-kit0/now 0.25.3-4ubuntu2.1 amd64 [installed,local]
+libpam-modules-bin/now 1.5.3-5ubuntu5.1 amd64 [installed,local]
+libpam-modules/now 1.5.3-5ubuntu5.1 amd64 [installed,local]
+libpam-runtime/now 1.5.3-5ubuntu5.1 all [installed,local]
+libpam0g/now 1.5.3-5ubuntu5.1 amd64 [installed,local]
+libpcre2-8-0/now 10.42-4ubuntu2 amd64 [installed,local]
+libproc2-0/now 2:4.0.4-4ubuntu3.2 amd64 [installed,local]
+libseccomp2/now 2.5.5-1ubuntu3.1 amd64 [installed,local]
+libselinux1/now 3.5-2ubuntu2 amd64 [installed,local]
+libsemanage-common/now 3.5-1build5 all [installed,local]
+libsemanage2/now 3.5-1build5 amd64 [installed,local]
+libsepol2/now 3.5-2build1 amd64 [installed,local]
+libsmartcols1/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+libss2/now 1.47.0-2.4~exp1ubuntu4.1 amd64 [installed,local]
+libssl3t64/now 3.0.13-0ubuntu3.4 amd64 [installed,local]
+libstdc++6/now 14-20240412-0ubuntu1 amd64 [installed,local]
+libsystemd0/now 255.4-1ubuntu8.4 amd64 [installed,local]
+libtasn1-6/now 4.19.0-3build1 amd64 [installed,local]
+libtinfo6/now 6.4+20240113-1ubuntu2 amd64 [installed,local]
+libudev1/now 255.4-1ubuntu8.4 amd64 [installed,local]
+libunistring5/now 1.1-2build1 amd64 [installed,local]
+libuuid1/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+libxxhash0/now 0.8.2-2build1 amd64 [installed,local]
+libzstd1/now 1.5.5+dfsg2-2build1.1 amd64 [installed,local]
+login/now 1:4.13+dfsg1-4ubuntu3.2 amd64 [installed,local]
+logsave/now 1.47.0-2.4~exp1ubuntu4.1 amd64 [installed,local]
+mawk/now 1.3.4.20240123-1build1 amd64 [installed,local]
+mount/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+ncurses-base/now 6.4+20240113-1ubuntu2 all [installed,local]
+ncurses-bin/now 6.4+20240113-1ubuntu2 amd64 [installed,local]
+passwd/now 1:4.13+dfsg1-4ubuntu3.2 amd64 [installed,local]
+perl-base/now 5.38.2-3.2build2 amd64 [installed,local]
+procps/now 2:4.0.4-4ubuntu3.2 amd64 [installed,local]
+sed/now 4.9-2build1 amd64 [installed,local]
+sensible-utils/now 0.0.22 all [installed,local]
+sysvinit-utils/now 3.08-6ubuntu3 amd64 [installed,local]
+tar/now 1.35+dfsg-3build1 amd64 [installed,local]
+ubuntu-keyring/now 2023.11.28.1 all [installed,local]
+util-linux/now 2.39.3-9ubuntu6.1 amd64 [installed,local]
+zlib1g/now 1:1.3.dfsg-3.1ubuntu2.1 amd64 [installed,local]
+
+update tha package database: (you will get updated list of packages and they are NOT installed)
+---------------------------------------------------------------------------------------------------
+root@7e62f9f74455:/# apt update 
+Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [720 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [15.3 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [537 kB] 
+Get:9 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [574 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]          
+Get:11 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [18.4 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [792 kB]        
+Get:15 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [542 kB]  
+Get:16 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [923 kB]    
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [11.8 kB] 
+Fetched 26.3 MB in 8s (3439 kB/s)                                                         
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+3 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+
+Find out the upgradable package list:
+-------------------------------------------
+root@7e62f9f74455:/# apt list --upgradable
+Listing... Done
+gcc-14-base/noble-updates,noble-security 14.2.0-4ubuntu2~24.04 amd64 [upgradable from: 14-20240412-0ubuntu1]
+libgcc-s1/noble-updates,noble-security 14.2.0-4ubuntu2~24.04 amd64 [upgradable from: 14-20240412-0ubuntu1]
+libstdc++6/noble-updates,noble-security 14.2.0-4ubuntu2~24.04 amd64 [upgradable from: 14-20240412-0ubuntu1]
+
+
+Upgrade the upgradable packages:
+--------------------------------------------------
+root@7e62f9f74455:/# apt upgrade
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Calculating upgrade... Done
+The following packages will be upgraded:
+  gcc-14-base libgcc-s1 libstdc++6
+Unpacking gcc-14-base:amd64 (14.2.0-4ubuntu2~24.04) over (14-20240412-0ubuntu1) ...       
+Setting up gcc-14-base:amd64 (14.2.0-4ubuntu2~24.04) ...
+(Reading database ... 4379 files and directories currently installed.)
+Preparing to unpack .../libstdc++6_14.2.0-4ubuntu2~24.04_amd64.deb ...
+Unpacking libstdc++6:amd64 (14.2.0-4ubuntu2~24.04) over (14-20240412-0ubuntu1) ...        
+Setting up libstdc++6:amd64 (14.2.0-4ubuntu2~24.04) ...
+(Reading database ... 4379 files and directories currently installed.)
+Preparing to unpack .../libgcc-s1_14.2.0-4ubuntu2~24.04_amd64.deb ...
+Unpacking libgcc-s1:amd64 (14.2.0-4ubuntu2~24.04) over (14-20240412-0ubuntu1) ...
+Setting up libgcc-s1:amd64 (14.2.0-4ubuntu2~24.04) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.3) ...
+
+install a package: (nano => a text editor for linux)
+---------------------------------------------------------------
+root@7e62f9f74455:/# apt install nano
+Reading package lists... Done
+Building dependency tree... Done
+Selecting previously unselected package nano.
+(Reading database ... 4379 files and directories currently installed.)
+Preparing to unpack .../nano_7.2-2ubuntu0.1_amd64.deb ...
+Unpacking nano (7.2-2ubuntu0.1) ...
+Setting up nano (7.2-2ubuntu0.1) ...
+update-alternatives: using /bin/nano to provide /usr/bin/editor (editor) in auto mode     
+update-alternatives: warning: skip creation of /usr/share/man/man1/editor.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group editor) doesn't exist
+update-alternatives: using /bin/nano to provide /usr/bin/pico (pico) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/pico.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group pico) doesn't exist
+
+remove a package: (nano)
+---------------------------------
+root@7e62f9f74455:/# apt remove nano
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following packages will be REMOVED:
+  nano
+0 upgraded, 0 newly installed, 1 to remove and 0 not upgraded.
+After this operation, 856 kB disk space will be freed.
+Do you want to continue? [Y/n] y
+(Reading database ... 4452 files and directories currently installed.)
+Removing nano (7.2-2ubuntu0.1) ...
+
+Linux Directory Structure: (everything is a file, including directories, devices, network sockets etc.)
+------------------------------------------------------------------------------------------------------------
+/ => root directory
+	- bin => all binaries or programs
+	- boot => contains boot files
+	- dev => short for devices (files for devices)
+	- etc => editable text configuration (config files)
+	- home => a directory for every user
+	- root => onlt root user has access to this
+	- lib => libraries (s/w library dependencies)
+	- var => files here are updated frquently (like lock files, database files etc.)
+	- proc => files representing a running processes
+
+current directory:
+-----------------------------------
+root@7e62f9f74455:/# pwd (print working directory => where are you at this moment?)
+/ (at the root of all directories)
+
+list all the directories:
+------------------------------
+root@7e62f9f74455:/# ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+
+move to a directory:
+--------------------------------
+root@7e62f9f74455:/# cd etc
+root@7e62f9f74455:/etc#
+
+view content of another directory without navigating to that one: (example: bin directory)
+-------------------------------------------------------------------------------------------------
+root@7e62f9f74455:/# ls /bin
+result of the command => 
+
+'['                        expiry             more                shuf
+ addpart                   expr               mount               skill
+ apt                       factor             mountpoint          slabtop
+ apt-cache                 faillog            mv                  sleep
+ apt-cdrom                 fallocate          namei               snice
+ apt-config                false              nawk                sort
+ apt-get                   fgrep              newgrp              split
+ apt-key                   find               nice                stat
+ apt-mark                  findmnt            nisdomainname       stdbuf
+ arch                      flock              nl                  stty
+ awk                       fmt                nohup               su
+ b2sum                     fold               nproc               sum
+ base32                    free               nsenter             sync
+ base64                    getconf            numfmt              tabs
+ basename                  getent             od                  tac
+ basenc                    getopt             pager               tail
+ bash                      gpasswd            partx               tar
+ bashbug                   gpgv               passwd              taskset
+ captoinfo                 grep               paste               tee
+ cat                       groups             pathchk             tempfile
+ chage                     gunzip             perl                test
+ chattr                    gzexe              perl5.38.2          tic
+ chcon                     gzip               pgrep               timeout
+ chfn                      hardlink           pidof               tload
+ chgrp                     head               pidwait             toe
+ chmod                     hostid             pinky               top
+ choom                     hostname           pkill               touch
+ chown                     i386               pldd                tput
+ chrt                      iconv              pmap                tr
+ chsh                      id                 pr                  true
+ cksum                     infocmp            printenv            truncate
+ clear                     infotocap          printf              tset
+ clear_console             install            prlimit             tsort
+ cmp                       ionice             ps                  tty
+ comm                      ipcmk              ptx                 tzselect
+ cp                        ipcrm              pwd                 uclampset
+ csplit                    ipcs               pwdx                umount
+ cut                       ischroot           rbash               uname
+ dash                      join               readlink            uncompress
+ date                      kill               realpath            unexpand
+ dd                        last               rename.ul           uniq
+ deb-systemd-helper        lastb              renice              unlink
+ deb-systemd-invoke        lastlog            reset               unshare
+ debconf                   ld.so              resizepart          update-alternatives     
+ debconf-apt-progress      ldd                rev                 uptime
+ debconf-communicate       link               rgrep               users
+ debconf-copydb            linux32            rm                  utmpdump
+ debconf-escape            linux64            rmdir               vdir
+ debconf-set-selections    ln                 run-parts           vmstat
+ debconf-show              locale             runcon              w
+ delpart                   locale-check       savelog             wall
+ df                        localedef          script              watch
+ diff                      logger             scriptlive          wc
+ diff3                     login              scriptreplay        wdctl
+ dir                       logname            sdiff               whereis
+ dircolors                 ls                 sed                 which
+ dirname                   lsattr             select-editor       which.debianutils       
+ dmesg                     lsblk              sensible-browser    who
+ dnsdomainname             lscpu              sensible-editor     whoami
+ domainname                lsipc              sensible-pager      x86_64
+ dpkg                      lslocks            sensible-terminal   xargs
+ dpkg-deb                  lslogins           seq                 yes
+ dpkg-divert               lsmem              setarch             ypdomainname
+ dpkg-maintscript-helper   lsns               setpriv             zcat
+ dpkg-query                man                setsid              zcmp
+ dpkg-realpath             mawk               setterm             zdiff
+ dpkg-split                mcookie            sg                  zdump
+ dpkg-statoverride         md5sum             sh                  zegrep
+ dpkg-trigger              md5sum.textutils   sha1sum             zfgrep
+ du                        mesg               sha224sum           zforce
+ echo                      mkdir              sha256sum           zgrep
+ egrep                     mkfifo             sha384sum           zless
+ env                       mknod              sha512sum           zmore
+ expand                    mktemp             shred               znew
+
+
+shortcut to move to 'root' directory:(special home directory for 'root' user)
+------------------------------------------------------------------------------------
+root@7e62f9f74455:/# cd ~ 
+root@7e62f9f74455:~#
+
+or proper way:
+-------------------
+root@7e62f9f74455:/# cd root
+root@7e62f9f74455:~# 
+
+create a sub-directory in 'root' directory:(mkdir command)
+-------------------------------------------------------------
+root@7e62f9f74455:~# mkdir test
+root@7e62f9f74455:~# ls
+test
+
+rename the directory: (mv command)
+-----------------------------------------
+root@7e62f9f74455:~# mv test docker
+root@7e62f9f74455:~# ls
+docker
+
+create a file:
+--------------------
+root@7e62f9f74455:~# cd docker
+root@7e62f9f74455:~/docker# touch hello.txt
+root@7e62f9f74455:~/docker# ls
+hello.txt
+
+rename a file:
+---------------------
+root@7e62f9f74455:~/docker# mv hello.txt hollodocker.txt
+root@7e62f9f74455:~/docker# ls
+hollodocker.txt
+
+delete a file:
+-------------------
+root@7e62f9f74455:~/docker# rm hollodocker.txt 
+
+delete a directory (and its contents recursively):
+---------------------------------------------------------
+root@7e62f9f74455:~/docker# cd ..
+root@7e62f9f74455:~# rm -r docker/
+
+How docker container gets image layer for Debian OS, on whcih ever other image layer is built?
+-------------------------------------------------------------------------------------------------------
+Docker containers wrap a piece of software in a complete filesystem that contains everything needed to run: code, runtime, system tools, system libraries – anything that can be installed on a server.
+
+Like FreeBSD Jails and Solaris Zones, Linux containers are self-contained execution environments -- with their own, isolated CPU, memory, block I/O, and network resources (Using CGROUPS kernel feature) -- that share the kernel of the host operating system. The result is something that feels like a virtual Machine, but sheds all the weight and startup overhead of a guest operating system.
+
+This being said Each distribution has it's own official docker image (library), that is shipped with minimal binaries, Considered docker's best practices and it's ready to build on.
+
+Docker used to use AUFS, still uses it on debian and uses AUFS like file systems like overlay and etc on other distributions. AUFS provides layering. Each Image consists of Layers, These layers are read only. Each container has a read/write layer on top of its image layers. Read only layer are shared between containers so you will have storage space savings. Container will see the union mount of all image layers + read/write layer.
+
+for further details:
+https://depot.dev/blog/building-container-layers-from-scratch

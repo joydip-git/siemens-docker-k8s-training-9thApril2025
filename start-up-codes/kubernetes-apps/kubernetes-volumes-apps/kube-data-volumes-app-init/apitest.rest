@@ -1,0 +1,12 @@
+POST http://127.0.0.1:63252/story
+Content-Type: application/json
+
+{
+    "text":"my story"
+}
+
+###
+GET http://127.0.0.1:63252/story
+
+###
+GET http://127.0.0.1:63252/error

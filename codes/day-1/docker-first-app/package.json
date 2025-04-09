@@ -1,0 +1,13 @@
+{
+  "name": "docker-first-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "joydip",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "docker-first-app": "file:"
+  }
+}

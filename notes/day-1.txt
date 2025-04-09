@@ -1,0 +1,106 @@
+1. deployment app dependencies, configs must remain same
+2. new memeber as part of the developmet must have same dependencies installed in the their machine
+3. 
+
+VMs => 
+
+Containers => app (process) => runs our app
+
+Docker => its meant for Linux
+
+Windows and Mac OS did not have "containerization" facility
+
+Hyper-v => one type of hypervisor => Type-1 and Type-2
+
+> Windows 10 Home
+
+WSL => Windows Subsystem for Linux
+
+
+chocolatey => package manager for windows
+apt => package manager for linux
+
+Node JS => JS runtime
+
+Visual Studio Code (VS Code)
+
+Dockerfile => text file => instructions to create/build image
+	=> which base image to choose
+	=> which commands to execute
+	=> files to copy
+	=> other configuration
+
+
+docker image:
+	references a list of read-only layers that represent filesystem differences. these layers are stacked up on top of each other to form a base for a container's root file system
+Docker Storage Driver is responsible for stacking these layers and provide an unified file system view.
+
+docker container:
+       presents the unified file system.
+
+chroot
+
+
+difference between Dockerfile, docker image and docker container??
+
+list of running containers:
+>docker ps
+or
+>docker container ls
+
+list of running containers (all - running or stopped):
+>docker ps -a
+or
+>docker container ls -a
+
+list of docker images:
+>docker image ls
+
+build an image:
+>docker image build -t first-app-image:v3 .
+or
+>docker build -t first-app-image:v3 .
+
+
+create and start a container:[by default in attached mode]
+>docker run --name <cont-name> [-p host-port:target-port] <image-name>
+
+create and start a container in detatched mode:
+>docker run -d --name <cont-name> [-p host-port:target-port] <image-name>
+
+start an existing (stopped/just created) container:[by default in detatched mode]
+>docker start <cont-name>
+
+start an existing (stopped) container in attached mode:
+>docker start -a <cont-name>
+
+how to change from detatched to attached mode?
+>docker attach <cont-name>
+or
+>docker logs <cont-name> --follow
+
+storage:
+	1. container writable layer: the data persists as long as the container is NOT removed.
+	2. Mounts:
+		a. volume: 
+		storage system that is controlled by docker
+		it is outside of the container
+		so, stopping as well as removal of the container will not have any impact on the volume. so, when you create a new container, simply use the volume created earlier.
+		it mounts a certian path (*) from WSL file system to container application directory (folder) path
+		docker volumes (both named as well as anonymous) are NOT removed (even though the containers are removed), until and unless you manually remove them.
+		Note: anonymous volumes are removed automatically if the the container which was using them, started with --rm flag (remove when stopped) and then stopped. --rm flag has no impact on named volumes.
+
+			i. anonymous volume: a volume is created with a certain id (NOT name) which will be used as name, which will be used to mount the WSL folder to app folder. every time you create a new container a fesh anonymous volume(s) is/are created for you. so, until and unless you are re-using the existing volume, you cant access that data present in the previous anonymous volumes.	
+
+			ii. named volume: you can create a volume with a certain name, which will be used to mount the WSL folder to app folder
+
+		b. bind mount
+		c. temporary file system: runtime-memory 
+
+(*) => path of volume storage: \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes
+
+/app/feedback <=> \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes\<volume-name/id>\_data
+
+
+	
+

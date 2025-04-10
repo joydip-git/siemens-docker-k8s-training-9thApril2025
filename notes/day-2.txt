@@ -17,6 +17,7 @@ networking in docker
 	nothing to do
 
 	4. an app in one container wants to interact with another app in another container
+	1. use the IP address of the other container (As assigned by bridge driver) connected to the same default (bridge) network provided by docker
 
 
 {
@@ -31,3 +32,6 @@ networking in docker
 	"url":"https://swapi.dev/api/people/1/"
 }
 
+
+lis of network drivers:
+bridge, host, none, macvlan, ipvlan, overlay

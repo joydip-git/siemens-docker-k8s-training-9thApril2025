@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 
 const Favorite = require('./models/favorite');
 
+const PORT = process.env.PORT
+const ADDRESS = process.env.ADDRESS
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -68,18 +71,29 @@ app.get('/people', async (req, res) => {
 });
 // app.listen(3000, () => console.log('server is running on port 3000'))
 
-mongoose.connect(
-  //'mongodb://host.docker.internal:27017/swfavorites',
-  'mongodb://172.17.0.2:27017/swfavorites',
-  // 'mongodb://mongoserver:27017/swfavorites',
-  { useNewUrlParser: true }
-).then(
-  (value) => {
-    console.log(value.connection);
-    app.listen(3000, () => console.log('server is running on port 3000'))
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+//1. connect to mongodb runing in host machine
+//'mongodb://host.docker.internal:27017/swfavorites',
+
+//2. connect to mongodb container under bridge network using IP address
+// 'mongodb://172.17.0.2:27017/swfavorites',
+
+//3. connect to mongodb container under user-defined network using IP address
+// 'mongodb://172.18.0.2:27017/swfavorites',
+
+//3. connect to mongodb container under user-defined network using DNS name
+//'mongodb://mongoserver:27017/swfavorites'
+
+
+const CON_STR = `mongodb://${ADDRESS}:27017/swfavorites`
+mongoose
+  .connect(CON_STR, { useNewUrlParser: true })
+  .then(
+    (value) => {
+      console.log(value.connection);
+      app.listen(PORT, () => console.log('server is running on port ' + PORT))
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
 

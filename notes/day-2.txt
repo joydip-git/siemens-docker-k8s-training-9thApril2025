@@ -1,0 +1,33 @@
+networking in docker
+	1. an app outside the docker (in the host machine) wants to interact with an app running in a docker container
+	use -p to map an internal port (target port) to host machine port
+	ex: -p 3000:3000
+
+	2. an app running in a docker container wants to interact with an host machine app(sevice)
+
+	IP address (DNS name of the host machine) of any service running in the machine for a docker container: host.docker.internal
+
+	sql server connection string: (for locally running app)
+	server=localhost;database=<>,user id=<>,password=<>,TrustServerCertficate=True
+
+	sql server connection string: (for containerized app)
+	server=host.docker.internal;database=<>,user id=<>,password=<>,TrustServerCertficate=True
+
+	3. an app running in a docker container wants to interact with www
+	nothing to do
+
+	4. an app in one container wants to interact with another app in another container
+
+
+{
+	"name": "A New Hope",
+	"type":"movie",
+	"url":"https://swapi.dev/api/films/1/"
+}
+
+{
+	"name": "Luke Skywalker",
+	"type":"character",
+	"url":"https://swapi.dev/api/people/1/"
+}
+

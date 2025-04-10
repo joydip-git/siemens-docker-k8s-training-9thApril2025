@@ -1,0 +1,9 @@
+POST http://localhost:3000/add
+Content-Type: application/json
+
+{
+    "product_id": 0,
+    "product_name": "pen",
+    "product_description": "new cello pen",
+    "product_price": 100
+}

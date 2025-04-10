@@ -1,0 +1,77 @@
+---------------------
+Create Network
+---------------------
+
+docker network create goals-net
+
+---------------------
+Create volumes
+---------------------
+
+docker volume create logs
+docker volume create data 
+
+---------------------
+Run MongoDB Container
+---------------------
+
+docker run --name mongoserver \
+  -e MONGO_INITDB_ROOT_USERNAME=joydip \
+  -e MONGO_INITDB_ROOT_PASSWORD=secret \
+  -v data:/data/db \
+  --rm \
+  -d \
+  --network goals-net \
+  mongo
+
+  or
+
+docker run -d --network goals-net --name mongoserver --env-file ./env/mongo.env -v data:/data/db mongo
+
+---------------------
+Build Node API Image
+---------------------
+
+docker build -t goals-node .
+
+---------------------
+Run Node API Container
+---------------------
+
+docker run --name goals-backend 
+  -e MONGODB_USERNAME=joydip \
+  -e MONGODB_PASSWORD=secret \
+  -v logs:/app/logs \
+  -v D:/my-applications/docker-apps/docker-compose-app/backend:/app \
+  -v /app/node_modules \
+  --rm \
+  -d \
+  --network goals-net \
+  -p 3001:3001 \
+  goals-node
+
+or
+
+docker run --name goals-backend -v logs:/app/logs -v D:/training/siemens-docker-k8s-training-9thApril2025/codes/day-2/docker-compose-app/backend:/app -v /app/node_modules --rm -d --network goals-net -p 3001:3001 -e ADDRESS=mongoserver --env-file ./env/backend.env goals-node:latest
+
+---------------------
+Build React SPA Image
+---------------------
+
+docker build -t goals-react .
+
+---------------------
+Run React SPA Container
+---------------------
+
+docker run --name goals-frontend -v D:/training/siemens-docker-k8s-training-9thApril2025/codes/day-2/docker-compose-app/frontend/src:/app/src --rm -d -p 3000:3000 -it goals-react
+
+or
+docker run --name goals-frontend --rm -d -p 3000:3000 -it goals-react
+
+---------------------
+Stop all Containers
+---------------------
+
+docker stop mongoserver goals-backend goals-frontend
+

@@ -1,0 +1,17 @@
+POST http://localhost:3001/goals
+Content-Type: application/json
+
+{
+    "text":"Learn Angular"
+}
+
+###
+POST http://localhost:3001/goals
+Content-Type: application/json
+
+{
+    "text":"Learn Docker"
+}
+
+###
+DELETE http://localhost:3001/goals/67f7a9f9f4d942001ebe3dcb

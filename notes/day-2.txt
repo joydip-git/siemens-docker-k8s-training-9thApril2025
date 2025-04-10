@@ -35,3 +35,66 @@ networking in docker
 
 lis of network drivers:
 bridge, host, none, macvlan, ipvlan, overlay
+
+passing environment variables:
+1. through docker file
+   ENV PORT=3000
+   ENV ADDRESS=mongoserver
+
+2. through an environment file(s)
+	in .env file => ENV PORT=3001
+
+3. using -e flag(s) when running the container
+
+docker run --rm -p 3001:3000 -p 3002:3000 -p 3003:3000 --name fav-app -e ADDRESS=mongoserver -e PORT=3000 --network=fav-net fav-image:latest
+
+precedence:
+
+using -e flag > through an environment file > through docker file
+
+
+docker run 
+--rm 
+-d
+-p 4000:3002 
+--name fav-app 
+-e ADDRESS=mongoserver 
+-e PORT=3002
+--env-file .env
+--network=fav-net   
+-v /app/node_modules
+-v feedback:/app/feedback
+-v d:/...../pages:/app/pages
+--tmpfs /apptemp
+fav-image:latest
+
+declarative way of creating and running containers, networks, volumes etc.
+
+docker compose
+
+/data/db
+/data/configdb
+
+docker network create goals-net
+----------------------------------------
+docker volume create logs
+docker volume create data
+--------------------------------------
+
+docker run \
+	-d \
+	--network goals-net \
+	--name mongoserver \
+	-e MONGO_INITDB_ROOT_USERNAME=joydip \
+	-e MONGO_INITDB_ROOT_PASSWORD=secret \
+	-v data:/data/db
+	mongo
+
+docker run -d --network goals-net --name mongoserver --env-file ./env/mongo.env -v data:/data/db mongo
+
+D:/training/siemens-docker-k8s-training-9thApril2025/codes/day-2/docker-compose-app/frontend
+
+
+
+
+

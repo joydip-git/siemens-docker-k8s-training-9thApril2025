@@ -80,7 +80,8 @@ or
 >docker logs <cont-name> --follow
 
 storage:
-	1. container writable layer: the data persists as long as the container is NOT removed.
+	1. container writable layer: the data persists as long as the container is NOT removed. this increases the size of the container. it is managed by docker storage driver and it provides the union file system using the linux kernel. but it creates an abstraction, which decreases performance of the application.
+
 	2. Mounts:
 		a. volume: 
 		storage system that is controlled by docker
@@ -94,13 +95,24 @@ storage:
 
 			ii. named volume: you can create a volume with a certain name, which will be used to mount the WSL folder to app folder
 
-		b. bind mount
-		c. temporary file system: runtime-memory 
+		b. bind mount: mounts a host file/folder path to containerized app folder path. it is NOT managed by docker.
+		c. temporary file system: 
+		host runtime-memory 
+		it helps you to write data outside the container's writable layer
 
 (*) => path of volume storage: \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes
 
 /app/feedback <=> \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes\<volume-name/id>\_data
 
+D:/training/siemens-docker-k8s-training-9thApril2025/codes/day-1/data-volumes-app/pages
+
+resolv.conf
+
+1st -v /app/data --rm => stop
+
+2nd --volumes-from 1st --rm???
+
+docker storage drivers and file system (overlayfs)
 
 	
 

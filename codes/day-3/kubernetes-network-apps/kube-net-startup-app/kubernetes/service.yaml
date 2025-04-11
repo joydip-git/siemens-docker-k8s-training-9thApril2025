@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: net-service
+spec:
+  selector:
+    app: net-pod
+    # authpod: auth-pod-label
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+    # - protocol: TCP
+    #   port: 3000
+    #   targetPort: 3000

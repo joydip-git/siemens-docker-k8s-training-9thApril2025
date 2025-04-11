@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: net-dep
+spec:
+  selector:
+    matchLabels:
+      app: net-pod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: net-pod
+    spec:
+      containers:
+        - name: users-api
+          image: "joydipdocker/users-api-img:latest"
+          imagePullPolicy: Always
+          # envFrom:
+          #   - file: /path
+          env:
+            - name: AUTH_ADDRESS
+          # value: "localhost:3000"
+          # value: "10.106.224.198:3000"
+          value: "auth-service.default:3000"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3001

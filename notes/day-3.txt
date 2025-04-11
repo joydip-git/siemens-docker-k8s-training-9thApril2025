@@ -29,3 +29,85 @@ Docker Secret management solution does not work with standalone containers. They
 MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongodb_username
 MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb_username
 
+
+
+want to run multiple containers in cluster [machines (physical or VMs)]
+if a container is stopped/crashing, automaticaly another should takes its place
+want to check which containers are not healthy
+scale up
+manage secrets in cluster
+manage volumes in cluster
+network management in cluster
+
+cloud provider => aws, azure, google
+on-premise
+
+docker swarm
+
+Kubernetes => orchestration tool, open source, portable
+is a collection of different tools and concepts (philosophies)
+
+deployment: object which is responsible for managing pods, autoscaling etc.
+pod => container(s)
+worker node (machine)=> pod(s) kubelet
+master node => controls worker nodes
+service => provides network infrastructure for pod(s) in one or multiple worker node(s)
+
+deployment.yaml
+
+
+
+
+k8s network services:
+1. ClusterIP: for interaction between containers inside the cluster
+2. NodePort: 
+	for interaction with containers from outside the cluster
+	it does not provide load balancing automatically
+3. LoadBalancer: for interaction with containers from outside the cluster. it does provide load balancing facility as leveraged from the cluster provider.
+
+cluster manager provide url with an IP > NodePort/LoadBalancer IP> worker node > pod and container
+
+
+commands:
+minikube:
+
+//start
+>minikube start --driver=docker
+
+//pause
+>minikube pause
+
+//stop minikube
+>minikube stop
+
+//dashboard
+>minikube dashboard
+
+//expose a service to the outside the world, so that clients can send request to the container
+>minikube service <service-name>
+
+create or update deployment and service:
+>kubectl apply -f .\deployment.yaml -f .\service.yaml
+
+delete deployment and service:
+>kubectl delete -f .\deployment.yaml -f .\service.yaml
+
+view the pods, deployments, namespaces, services, pvs, pvcs etc.
+>kubectl get pods
+>kubectl get deployments
+>kubectl get namespaces
+>kubectl get services
+>kubectl get persistentvolumes
+>kubectl get persistentvolumeclaims
+
+
+joydipdocker/auth-api-img
+joydipdocker/users-api-img
+
+sepcial env variable that is passed to the running container in a pod, which has been exposed by the "service". that env variable name will be <servicename>_SERVICE_HOST. this wil carry the cluste ip address.
+if the service name has - as separator it wil be converted to _.
+ex: service => auth-service
+	env var name=> AUTH_SERVICE_SERVICE_HOST (Cluster IP)
+
+
+

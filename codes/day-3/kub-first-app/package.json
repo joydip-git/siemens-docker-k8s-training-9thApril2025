@@ -1,0 +1,13 @@
+{
+  "name": "restful-app",
+  "version": "1.0.0",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "restful-app": "file:"
+  }
+}

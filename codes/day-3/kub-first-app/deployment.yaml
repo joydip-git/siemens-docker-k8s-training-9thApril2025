@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kub-dep
+  labels:
+    app: kub-dep-label
+spec:
+  selector:
+    matchLabels:
+      app: kub-first-pod-label
+  replicas: 1
+  template:
+    metadata:
+      name: kub-first-pod
+      labels:
+        app: kub-first-pod-label
+    spec:
+      containers:
+        - name: kub-app
+          image: "joydipdocker/first-app-img:latest"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "500m"

@@ -30,8 +30,8 @@ In case of cloud, the kubectl will be in our local machine, where the cluster wi
 
 minikube: to set up a dummy cluster in the local machine. it uses a VM in your machine to set up the cluster. 
 
-before everything else check the systeminfo:
->systeminfo
+
+before everything else check the systeminfo:>systeminfo
 
 1. install chocolatey
 2. install kubectl using chocolatey [choco install kubernetes-cli]

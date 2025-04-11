@@ -1,0 +1,7 @@
+.dockerignore
+Dockerfile
+deployment.yaml
+service.yaml
+master.yaml
+node_modules
+package-lock.json

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-dep
+spec:
+  selector:
+    matchLabels:
+      app: auth-pod-label
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth-pod-label
+    spec:
+      containers:
+        - name: auth-api
+          image: "joydipdocker/auth-api-img:latest"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "500m"

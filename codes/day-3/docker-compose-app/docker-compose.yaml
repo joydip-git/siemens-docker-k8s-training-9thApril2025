@@ -1,0 +1,69 @@
+# version: "3.8"
+
+# networks:
+#   goals-net:
+#     driver: bridge
+
+volumes:
+  data:
+  logs:
+
+secrets:
+  mongodb_username:
+    file: ./secrets/username.txt
+  mongodb_password:
+    file: ./secrets/password.txt
+
+services:
+  mongodb:
+    container_name: mongoserver # mongoserver_1 [mongoserver]
+    image: "mongo"
+    volumes:
+      - data:/data/db
+    secrets:
+      - mongodb_username
+      - mongodb_password
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongodb_username
+      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb_password
+    # env_file: ./env/mongo.env
+    # networks:
+    #   - goals-net
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=joydip
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
+  backend:
+    container_name: goals-backend #backend_1 [backend]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    secrets:
+      - mongodb_username
+      - mongodb_password
+    env_file:
+      - ./env/backend.env
+    environment:
+      ADDRESS: mongoserver
+      MONGODB_USERNAME_FILE: /run/secrets/mongodb_username
+      MONGODB_PASSWORD_FILE: /run/secrets/mongodb_password
+    volumes:
+      - logs:/app/logs
+      - /app/node_modules
+      - ./backend:/app
+    ports:
+      - "3001:3001"
+    # Other services that this service depends on, which will be started before this one
+    depends_on:
+      - mongodb
+  frontend:
+    build: ./frontend
+    container_name: goals-frontend # frontend_1 [frontend]
+    volumes:
+      - ./frontend/src:/app/src
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+      - mongodb

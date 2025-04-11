@@ -1,0 +1,31 @@
+docker compose => tool
+
+docker-compose up/down
+
+docker-compose.yaml => 
+
+volumes
+network => goals-net
+secrets
+service(s) => config for container(s)
+		network
+		volumes
+		port
+		env
+		secrets
+		depnends-on
+
+<dir-name>-<service-name>
+
+
+Docker Secrets:
+	an object to store sensitive data securely 
+	these data are encrypted, managed via Docker (NOT Docker cli) swarm or K8s
+	accessed as files
+Docker Secret management solution does not work with standalone containers. They wworl only cluster environment, such as Docker Compose or Swarm or K8s
+
+	Note: docker secret management DOES NOT work with "docker run" command
+
+MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongodb_username
+MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb_username
+
